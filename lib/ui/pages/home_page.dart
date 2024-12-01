@@ -27,10 +27,10 @@ class HomePage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
-          buildProfile(),
+          buildProfile(context),
           buildWalletCard(),
           buildLevel(),
-          buildServices(),
+          buildServices(context),
           buildLatestTransactions(),
           buildSendAgain(),
           buildFriendlyTips(),
@@ -97,7 +97,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildProfile() {
+  Widget buildProfile(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 40),
       child: Row(
@@ -126,28 +126,33 @@ class HomePage extends StatelessWidget {
             ],
           ),
           // profile
-          Container(
-            height: 60,
-            width: 60,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/img_profile.png'),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/profile');
+            },
+            child: Container(
+              height: 60,
+              width: 60,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/img_profile.png'),
+                ),
+                shape: BoxShape.circle,
               ),
-              shape: BoxShape.circle,
-            ),
-            child: Align(
-              alignment: Alignment.topRight,
-              child: Container(
-                height: 16,
-                width: 16,
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('assets/ic_check.png'),
-                  ),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: whiteColor,
-                    width: 2,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  height: 16,
+                  width: 16,
+                  decoration: BoxDecoration(
+                    image: const DecorationImage(
+                      image: AssetImage('assets/ic_check.png'),
+                    ),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: whiteColor,
+                      width: 2,
+                    ),
                   ),
                 ),
               ),
@@ -263,7 +268,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildServices() {
+  Widget buildServices(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 30),
       child: Column(
@@ -285,7 +290,9 @@ class HomePage extends StatelessWidget {
               HomeServiceItem(
                 title: 'Top Up',
                 iconUrl: 'ic_topup.png',
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, '/topup');
+                },
               ),
               HomeServiceItem(
                 title: 'Send',
