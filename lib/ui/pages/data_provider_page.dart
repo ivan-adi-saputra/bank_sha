@@ -1,3 +1,4 @@
+import 'package:bank_sha/shared/helpers.dart';
 import 'package:bank_sha/shared/theme.dart';
 import 'package:bank_sha/ui/widgets/buttons.dart';
 import 'package:bank_sha/ui/widgets/provider_item.dart';
@@ -60,7 +61,7 @@ class DataProviderPage extends StatelessWidget {
                     height: 2,
                   ),
                   Text(
-                    'Balance: Rp 180.000.000',
+                    'Balance: ${formatCurrency(18000000)}',
                     style: greyTextStyle.copyWith(
                       fontSize: 12,
                     ),

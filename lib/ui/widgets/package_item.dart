@@ -43,7 +43,7 @@ class PackageItem extends StatelessWidget {
             height: 6,
           ),
           Text(
-            'Rp ${formatCurrency(price)}',
+            formatCurrency(price),
             style: greyTextStyle.copyWith(
               fontSize: 12,
             ),

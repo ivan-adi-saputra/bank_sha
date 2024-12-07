@@ -1,3 +1,4 @@
+import 'package:bank_sha/shared/helpers.dart';
 import 'package:bank_sha/shared/theme.dart';
 import 'package:bank_sha/ui/widgets/home_friendly_tips.dart';
 import 'package:bank_sha/ui/widgets/home_send_again_item.dart';
@@ -205,7 +206,7 @@ class HomePage extends StatelessWidget {
             style: whiteTextStyle,
           ),
           Text(
-            'Rp 12.500',
+            formatCurrency(12500),
             style: whiteTextStyle.copyWith(
               fontWeight: semiBold,
               fontSize: 24,
@@ -243,7 +244,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               Text(
-                'of Rp 20.000',
+                'of ${formatCurrency(20000)}',
                 style: blackTextStyle.copyWith(
                   fontWeight: semiBold,
                 ),
@@ -343,30 +344,30 @@ class HomePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 color: whiteColor,
               ),
-              child: const Column(
+              child: Column(
                 children: [
                   HomeTransactionsItem(
                     title: 'Top Up',
                     time: 'Yesterday',
-                    value: '+ 450.000',
+                    value: '+ ${formatCurrency(20000, symbol: '')}',
                     iconUrl: 'ic_transaction_cat1.png',
                   ),
                   HomeTransactionsItem(
                     title: 'Top Up',
                     time: 'Yesterday',
-                    value: '+ 450.000',
+                    value: '+ ${formatCurrency(20000, symbol: '')}',
                     iconUrl: 'ic_transaction_cat2.png',
                   ),
                   HomeTransactionsItem(
                     title: 'Top Up',
                     time: 'Yesterday',
-                    value: '+ 450.000',
+                    value: '+ ${formatCurrency(20000, symbol: '')}',
                     iconUrl: 'ic_transaction_cat3.png',
                   ),
                   HomeTransactionsItem(
                     title: 'Top Up',
                     time: 'Yesterday',
-                    value: '+ 450.000',
+                    value: '+ ${formatCurrency(20000, symbol: '')}',
                     iconUrl: 'ic_transaction_cat4.png',
                   ),
                 ],
