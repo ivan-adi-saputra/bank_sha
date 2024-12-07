@@ -18,7 +18,7 @@ class _SplashPageState extends State<SplashPage> {
     Timer(const Duration(seconds: 1), () {
       Navigator.pushNamedAndRemoveUntil(
         context,
-        '/topup-amount',
+        '/home',
         (route) => false,
       );
     });
