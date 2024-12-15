@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bank_sha/models/sign_in_form_model.dart';
 import 'package:bank_sha/models/sign_up_form_model.dart';
 import 'package:bank_sha/models/user_model.dart';
 import 'package:bank_sha/shared/shared_values.dart';
@@ -35,9 +36,6 @@ class AuthService {
         body: data.toJson(),
       );
 
-      print('Response status: ${res.statusCode}');
-      print('Response body: ${res.body}');
-
       if (res.statusCode == 200) {
         final responseJson = jsonDecode(res.body) as Map<String, dynamic>;
         UserModel user = UserModel.fromJson(responseJson);
@@ -50,7 +48,30 @@ class AuthService {
         throw errorMessage;
       }
     } catch (e) {
-      print('Error: $e');
+      rethrow;
+    }
+  }
+
+  Future<UserModel> login(SignInFormModel data) async {
+    try {
+      final res = await http.post(
+        Uri.parse('$baseUrl/login'),
+        body: data.toJson(),
+      );
+
+      print(jsonDecode(res.body));
+
+      if (res.statusCode == 200) {
+        final responseJson = jsonDecode(res.body) as Map<String, dynamic>;
+        UserModel user = UserModel.fromJson(responseJson);
+        user = user.copyWith(password: data.password);
+        return user;
+      } else {
+        print(jsonDecode(res.body));
+        throw jsonDecode(res.body)['errors'];
+      }
+    } catch (e) {
+      print(e.toString());
       rethrow;
     }
   }
