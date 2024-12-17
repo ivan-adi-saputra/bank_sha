@@ -150,10 +150,7 @@ class _SignUpSetKtpPageState extends State<SignUpSetKtpPage> {
                                   widget.data.copyWith(
                                     ktp: selectedImage == null
                                         ? null
-                                        : 'data:image/png;base64,' +
-                                            base64Encode(
-                                                File(selectedImage!.path)
-                                                    .readAsBytesSync()),
+                                        : 'data:image/png;base64,${base64Encode(File(selectedImage!.path).readAsBytesSync())}',
                                   ),
                                 ),
                               );
