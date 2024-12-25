@@ -1,18 +1,13 @@
+import 'package:bank_sha/models/user_model.dart';
 import 'package:bank_sha/shared/theme.dart';
 import 'package:flutter/material.dart';
 
 class TransferRecentUsers extends StatelessWidget {
-  final String name;
-  final String username;
-  final String imgUrl;
-  final bool isVerified;
+  final UserModel user;
 
   const TransferRecentUsers({
     super.key,
-    required this.name,
-    required this.username,
-    required this.imgUrl,
-    this.isVerified = false,
+    required this.user,
   });
 
   @override
@@ -31,7 +26,12 @@ class TransferRecentUsers extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: AssetImage(imgUrl),
+                image:
+                    user.profilePicture == null || user.profilePicture!.isEmpty
+                        ? const AssetImage(
+                            'assets/img_profile.png',
+                          )
+                        : NetworkImage(user.profilePicture!) as ImageProvider,
               ),
             ),
           ),
@@ -43,7 +43,7 @@ class TransferRecentUsers extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                name,
+                user.name.toString(),
                 style: blackTextStyle.copyWith(
                   fontWeight: medium,
                   fontSize: 16,
@@ -53,7 +53,7 @@ class TransferRecentUsers extends StatelessWidget {
                 height: 2,
               ),
               Text(
-                '@$username',
+                '@${user.username}',
                 style: greyTextStyle.copyWith(
                   fontSize: 12,
                 ),
@@ -62,7 +62,7 @@ class TransferRecentUsers extends StatelessWidget {
           ),
           const Spacer(),
           // verified badge
-          if (isVerified) verified(),
+          if (user.verified == 1) verified(),
         ],
       ),
     );

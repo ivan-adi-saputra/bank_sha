@@ -1,9 +1,14 @@
+import 'package:bank_sha/blocs/user/user_bloc.dart';
+import 'package:bank_sha/models/transfer_form_model.dart';
+import 'package:bank_sha/models/user_model.dart';
 import 'package:bank_sha/shared/theme.dart';
+import 'package:bank_sha/ui/pages/transfer_amount_page.dart';
 import 'package:bank_sha/ui/widgets/buttons.dart';
 import 'package:bank_sha/ui/widgets/forms.dart';
 import 'package:bank_sha/ui/widgets/transfer_recent_users.dart';
 import 'package:bank_sha/ui/widgets/transfer_result.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransferPage extends StatefulWidget {
   const TransferPage({super.key});
@@ -13,7 +18,17 @@ class TransferPage extends StatefulWidget {
 }
 
 class _TransferPageState extends State<TransferPage> {
-  TextEditingController searchController = TextEditingController(text: '');
+  TextEditingController usernameController = TextEditingController(text: '');
+
+  UserModel? selectedUser;
+
+  late UserBloc userBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    userBloc = context.read<UserBloc>()..add(UserGetRecent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,19 +55,36 @@ class _TransferPageState extends State<TransferPage> {
           CustomFormField(
             title: 'by username',
             isShowTitle: false,
-            controller: searchController,
+            controller: usernameController,
+            onFieldSubmitted: (value) {
+              if (value.isNotEmpty) {
+                userBloc.add(UserGetByUsername(usernameController.text));
+              } else {
+                userBloc.add(UserGetRecent());
+              }
+              setState(() {});
+            },
           ),
-          // buildRecentUsers(),
-          buildResult(),
+          usernameController.text.isEmpty ? buildRecentUsers() : buildResult(),
           const SizedBox(
             height: 270,
           ),
-          CustomFilledButton(
-            title: 'Continue',
-            onPressed: () {
-              Navigator.pushNamed(context, '/transfer-amount');
-            },
-          )
+          if (selectedUser != null)
+            CustomFilledButton(
+              title: 'Continue',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TransferAmountPage(
+                      data: TransferFormModel(
+                        sendTo: selectedUser?.username,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )
         ],
       ),
     );
@@ -76,21 +108,34 @@ class _TransferPageState extends State<TransferPage> {
           const SizedBox(
             height: 14,
           ),
-          const TransferRecentUsers(
-            name: 'Yoanna Jie',
-            username: 'yoenna',
-            imgUrl: 'assets/img_friend1.png',
-            isVerified: true,
-          ),
-          const TransferRecentUsers(
-            name: 'John Hi',
-            username: 'jhi',
-            imgUrl: 'assets/img_friend2.png',
-          ),
-          const TransferRecentUsers(
-            name: 'Masayoshi',
-            username: 'form',
-            imgUrl: 'assets/img_friend3.png',
+          BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              if (state is UserSuccess) {
+                return Column(
+                  children: state.users.map((user) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TransferAmountPage(
+                              data: TransferFormModel(
+                                sendTo: user.username,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      child: TransferRecentUsers(user: user),
+                    );
+                  }).toList(),
+                );
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
           ),
         ],
       ),
@@ -113,28 +158,33 @@ class _TransferPageState extends State<TransferPage> {
           const SizedBox(
             height: 14,
           ),
-          const Wrap(
-            runSpacing: 17,
-            spacing: 17,
-            children: [
-              TransferResult(
-                name: 'Yoanna Jie',
-                username: 'yoenna',
-                imgUrl: 'assets/img_friend1.png',
-                isVerified: true,
-              ),
-              TransferResult(
-                name: 'John Hi',
-                username: 'jhi',
-                imgUrl: 'assets/img_friend2.png',
-              ),
-              TransferResult(
-                name: 'Masayoshi',
-                username: 'form',
-                imgUrl: 'assets/img_friend3.png',
-              ),
-            ],
-          )
+          BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              if (state is UserSuccess) {
+                return Wrap(
+                  spacing: 17,
+                  runSpacing: 17,
+                  children: state.users.map((user) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedUser = user;
+                        });
+                      },
+                      child: TransferResult(
+                        user: user,
+                        isSelected: user.id == selectedUser?.id,
+                      ),
+                    );
+                  }).toList(),
+                );
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          ),
         ],
       ),
     );

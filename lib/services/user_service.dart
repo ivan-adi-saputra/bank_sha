@@ -39,7 +39,7 @@ class UserService {
       final res = await http.get(
         Uri.parse('$baseUrl/users/$username'),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': token,
         },
       );
 
@@ -68,7 +68,7 @@ class UserService {
       final res = await http.get(
         Uri.parse('$baseUrl/transfer_histories'),
         headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': token,
         },
       );
 

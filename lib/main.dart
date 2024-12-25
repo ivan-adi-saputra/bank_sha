@@ -1,4 +1,5 @@
 import 'package:bank_sha/blocs/auth/auth_bloc.dart';
+import 'package:bank_sha/blocs/user/user_bloc.dart';
 import 'package:bank_sha/shared/theme.dart';
 import 'package:bank_sha/ui/pages/data_package_page.dart';
 import 'package:bank_sha/ui/pages/data_provider_page.dart';
@@ -16,7 +17,6 @@ import 'package:bank_sha/ui/pages/sign_up_success_page.dart';
 import 'package:bank_sha/ui/pages/splash_page.dart';
 import 'package:bank_sha/ui/pages/topup_page.dart';
 import 'package:bank_sha/ui/pages/topup_success_page.dart';
-import 'package:bank_sha/ui/pages/transfer_amount_page.dart';
 import 'package:bank_sha/ui/pages/transfer_page.dart';
 import 'package:bank_sha/ui/pages/transfer_success_page.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +33,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => AuthBloc()..add(AuthGetCurrent()),
+        ),
+        BlocProvider(
+          create: (context) => UserBloc(),
         ),
       ],
       child: MaterialApp(
@@ -67,7 +70,6 @@ class MyApp extends StatelessWidget {
           '/topup': (context) => const TopupPage(),
           '/topup-success': (context) => const TopupSuccessPage(),
           '/transfer': (context) => const TransferPage(),
-          '/transfer-amount': (context) => const TransferAmountPage(),
           '/transfer-success': (context) => const TransferSuccessPage(),
           '/data-provider': (context) => const DataProviderPage(),
           '/data-package': (context) => const DataPackagePage(),
