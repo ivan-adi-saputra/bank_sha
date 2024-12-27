@@ -1,16 +1,15 @@
+import 'package:bank_sha/models/operator_card_model.dart';
 import 'package:bank_sha/shared/theme.dart';
 import 'package:flutter/material.dart';
 
 class ProviderItem extends StatelessWidget {
-  final String name;
-  final String imgUrl;
+  final OperatorCardModel data;
   final bool isSelected;
 
   const ProviderItem({
     super.key,
-    required this.name,
-    required this.imgUrl,
     this.isSelected = false,
+    required this.data,
   });
 
   @override
@@ -31,15 +30,15 @@ class ProviderItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(
-            imgUrl,
+          Image.network(
+            data.thumbnail!,
             height: 30,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                name,
+                data.name!,
                 style: blackTextStyle.copyWith(
                   fontWeight: medium,
                   fontSize: 16,
@@ -49,7 +48,7 @@ class ProviderItem extends StatelessWidget {
                 height: 2,
               ),
               Text(
-                'Available',
+                data.status!,
                 style: greyTextStyle.copyWith(
                   fontSize: 12,
                 ),

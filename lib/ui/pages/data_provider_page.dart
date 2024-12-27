@@ -1,11 +1,23 @@
+import 'package:bank_sha/blocs/auth/auth_bloc.dart';
+import 'package:bank_sha/blocs/operator_card/operator_card_bloc.dart';
+import 'package:bank_sha/models/operator_card_model.dart';
 import 'package:bank_sha/shared/helpers.dart';
 import 'package:bank_sha/shared/theme.dart';
+import 'package:bank_sha/ui/pages/data_package_page.dart';
 import 'package:bank_sha/ui/widgets/buttons.dart';
 import 'package:bank_sha/ui/widgets/provider_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class DataProviderPage extends StatelessWidget {
+class DataProviderPage extends StatefulWidget {
   const DataProviderPage({super.key});
+
+  @override
+  State<DataProviderPage> createState() => _DataProviderPageState();
+}
+
+class _DataProviderPageState extends State<DataProviderPage> {
+  OperatorCardModel? selectedOperator;
 
   @override
   Widget build(BuildContext context) {
@@ -13,15 +25,24 @@ class DataProviderPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Beli Data'),
       ),
-      bottomNavigationBar: Container(
-        margin: const EdgeInsets.all(24),
-        child: CustomFilledButton(
-          title: 'Continue',
-          onPressed: () {
-            Navigator.pushNamed(context, '/data-package');
-          },
-        ),
-      ),
+      bottomNavigationBar: selectedOperator != null
+          ? Container(
+              margin: const EdgeInsets.all(24),
+              child: CustomFilledButton(
+                title: 'Continue',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DataPackagePage(
+                        operator: selectedOperator!,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            )
+          : Container(),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         children: [
@@ -47,26 +68,35 @@ class DataProviderPage extends StatelessWidget {
               const SizedBox(
                 width: 10,
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '8008 2208 1996',
-                    style: blackTextStyle.copyWith(
-                      fontSize: 16,
-                      fontWeight: medium,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 2,
-                  ),
-                  Text(
-                    'Balance: ${formatCurrency(18000000)}',
-                    style: greyTextStyle.copyWith(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  if (state is AuthSuccess) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          state.user.cardNumber!.replaceAllMapped(
+                              RegExp(r".{4}"), (match) => "${match.group(0)} "),
+                          style: blackTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: medium,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        Text(
+                          'Balance: ${formatCurrency(state.user.balance ?? 0)}',
+                          style: greyTextStyle.copyWith(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+
+                  return Container();
+                },
               ),
             ],
           ),
@@ -83,18 +113,33 @@ class DataProviderPage extends StatelessWidget {
           const SizedBox(
             height: 14,
           ),
-          const ProviderItem(
-            name: 'Telkomsel',
-            imgUrl: 'assets/img_provider_telkomsel.png',
-            isSelected: true,
-          ),
-          const ProviderItem(
-            name: 'Indosat Ororedoo',
-            imgUrl: 'assets/img_provider_indosat.png',
-          ),
-          const ProviderItem(
-            name: 'Singtel ID',
-            imgUrl: 'assets/img_provider_singtel.png',
+          BlocProvider(
+            create: (context) => OperatorCardBloc()..add(OperatorCardGet()),
+            child: BlocBuilder<OperatorCardBloc, OperatorCardState>(
+              builder: (context, state) {
+                if (state is OperatorCardSuccess) {
+                  return Column(
+                    children: state.operators.map((operator) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedOperator = operator;
+                          });
+                        },
+                        child: ProviderItem(
+                          data: operator,
+                          isSelected: operator.id == selectedOperator?.id,
+                        ),
+                      );
+                    }).toList(),
+                  );
+                }
+
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
           ),
         ],
       ),
