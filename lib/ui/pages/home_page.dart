@@ -1,6 +1,11 @@
 import 'package:bank_sha/blocs/auth/auth_bloc.dart';
+import 'package:bank_sha/blocs/tip/tip_bloc.dart';
+import 'package:bank_sha/blocs/transaction/transaction_bloc.dart';
+import 'package:bank_sha/blocs/user/user_bloc.dart';
+import 'package:bank_sha/models/transfer_form_model.dart';
 import 'package:bank_sha/shared/helpers.dart';
 import 'package:bank_sha/shared/theme.dart';
+import 'package:bank_sha/ui/pages/transfer_amount_page.dart';
 import 'package:bank_sha/ui/widgets/home_friendly_tips.dart';
 import 'package:bank_sha/ui/widgets/home_send_again_item.dart';
 import 'package:bank_sha/ui/widgets/home_service_item.dart';
@@ -360,40 +365,33 @@ class HomePage extends StatelessWidget {
             ),
           ),
           Container(
-              margin: const EdgeInsets.only(top: 14),
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: whiteColor,
+            margin: const EdgeInsets.only(top: 14),
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: whiteColor,
+            ),
+            child: BlocProvider(
+              create: (context) => TransactionBloc()..add(TransactionGet()),
+              child: BlocBuilder<TransactionBloc, TransactionState>(
+                builder: (context, state) {
+                  if (state is TransactionSuccess) {
+                    return Column(
+                      children: state.transactions.map((transaction) {
+                        return HomeTransactionsItem(
+                          transaction: transaction,
+                        );
+                      }).toList(),
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
               ),
-              child: Column(
-                children: [
-                  HomeTransactionsItem(
-                    title: 'Top Up',
-                    time: 'Yesterday',
-                    value: '+ ${formatCurrency(20000, symbol: '')}',
-                    iconUrl: 'ic_transaction_cat1.png',
-                  ),
-                  HomeTransactionsItem(
-                    title: 'Top Up',
-                    time: 'Yesterday',
-                    value: '+ ${formatCurrency(20000, symbol: '')}',
-                    iconUrl: 'ic_transaction_cat2.png',
-                  ),
-                  HomeTransactionsItem(
-                    title: 'Top Up',
-                    time: 'Yesterday',
-                    value: '+ ${formatCurrency(20000, symbol: '')}',
-                    iconUrl: 'ic_transaction_cat3.png',
-                  ),
-                  HomeTransactionsItem(
-                    title: 'Top Up',
-                    time: 'Yesterday',
-                    value: '+ ${formatCurrency(20000, symbol: '')}',
-                    iconUrl: 'ic_transaction_cat4.png',
-                  ),
-                ],
-              )),
+            ),
+          ),
         ],
       ),
     );
@@ -415,29 +413,41 @@ class HomePage extends StatelessWidget {
           const SizedBox(
             height: 14,
           ),
-          const SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                HomeSendAgainItem(
-                  username: 'yuanita',
-                  imageUrl: 'img_friend1.png',
-                ),
-                HomeSendAgainItem(
-                  username: 'urip',
-                  imageUrl: 'img_friend2.png',
-                ),
-                HomeSendAgainItem(
-                  username: 'saputra',
-                  imageUrl: 'img_friend3.png',
-                ),
-                HomeSendAgainItem(
-                  username: 'john',
-                  imageUrl: 'img_friend4.png',
-                ),
-              ],
+          BlocProvider(
+            create: (context) => UserBloc()..add(UserGetRecent()),
+            child: BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                if (state is UserSuccess) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: state.users.map((user) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TransferAmountPage(
+                                  data: TransferFormModel(
+                                    sendTo: user.username,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          child: HomeSendAgainItem(user: user),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                }
+
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
-          )
+          ),
         ],
       ),
     );
@@ -462,31 +472,25 @@ class HomePage extends StatelessWidget {
           const SizedBox(
             height: 14,
           ),
-          const Wrap(
-            spacing: 17,
-            runSpacing: 18,
-            children: [
-              HomeFriendlyTips(
-                imageUrl: 'assets/img_tips1.png',
-                title: 'Best tips for using a credit card',
-                url: 'https://www.google.com/',
-              ),
-              HomeFriendlyTips(
-                imageUrl: 'assets/img_tips2.png',
-                title: 'Best tips for using a credit card',
-                url: 'https://www.google.com/',
-              ),
-              HomeFriendlyTips(
-                imageUrl: 'assets/img_tips3.png',
-                title: 'Best tips for using a credit card',
-                url: 'https://www.google.com/',
-              ),
-              HomeFriendlyTips(
-                imageUrl: 'assets/img_tips4.png',
-                title: 'Best tips for using a credit card',
-                url: 'https://www.google.com/',
-              ),
-            ],
+          BlocProvider(
+            create: (context) => TipBloc()..add(TipsGet()),
+            child: BlocBuilder<TipBloc, TipState>(
+              builder: (context, state) {
+                if (state is TipSuccess) {
+                  return Wrap(
+                    spacing: 17,
+                    runSpacing: 18,
+                    children: state.tip.map((tip) {
+                      return HomeFriendlyTips(tip: tip);
+                    }).toList(),
+                  );
+                }
+
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ),
           ),
         ],
       ),

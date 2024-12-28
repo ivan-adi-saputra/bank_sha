@@ -1,18 +1,15 @@
+import 'package:bank_sha/models/transaction_model.dart';
+import 'package:bank_sha/shared/helpers.dart';
 import 'package:bank_sha/shared/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomeTransactionsItem extends StatelessWidget {
-  final String title;
-  final String time;
-  final String value;
-  final String iconUrl;
+  final TransactionModel transaction;
 
   const HomeTransactionsItem({
     super.key,
-    required this.title,
-    required this.time,
-    required this.value,
-    required this.iconUrl,
+    required this.transaction,
   });
 
   @override
@@ -21,9 +18,9 @@ class HomeTransactionsItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 18),
       child: Row(
         children: [
-          Image.asset(
-            iconUrl,
-            height: 48,
+          Image.network(
+            transaction.transactionType!.thumbnail!,
+            width: 48,
           ),
           const SizedBox(
             width: 16,
@@ -33,7 +30,7 @@ class HomeTransactionsItem extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  transaction.transactionType!.name!,
                   style: blackTextStyle.copyWith(
                     fontSize: 16,
                     fontWeight: medium,
@@ -43,7 +40,7 @@ class HomeTransactionsItem extends StatelessWidget {
                   height: 2,
                 ),
                 Text(
-                  time,
+                  DateFormat('MMMM dd').format(transaction.createdAt!),
                   style: greyTextStyle.copyWith(
                     fontSize: 12,
                   ),
@@ -52,7 +49,8 @@ class HomeTransactionsItem extends StatelessWidget {
             ),
           ),
           Text(
-            value,
+            (transaction.transactionType?.action == 'cr' ? '+ ' : '- ') +
+                formatCurrency(transaction.amount!),
             style: blackTextStyle.copyWith(
               fontWeight: medium,
               fontSize: 16,
